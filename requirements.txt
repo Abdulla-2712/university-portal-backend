@@ -1,0 +1,9 @@
+Django
+django-cors-headers
+django-ninja
+django-ninja-jwt
+pydantic[email]
+psycopg2-binary
+psycopg
+Pillow
+rav
