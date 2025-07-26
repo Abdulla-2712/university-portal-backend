@@ -92,3 +92,5 @@ def get_all_comps(request):
     ]
     
     return JsonResponse(data, safe=False)
+
+
