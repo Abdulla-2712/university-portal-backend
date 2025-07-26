@@ -1,18 +1,28 @@
-from ninja_extra import NinjaExtraAPI
-from ninja_jwt.controller import NinjaJWTDefaultController
-from django.shortcuts import get_object_or_404
 from ninja import Schema, Router
 from ninja.errors import HttpError
+from ninja_extra import NinjaExtraAPI
+from ninja_jwt.controller import NinjaJWTDefaultController
+from ninja_jwt.authentication import JWTAuth  # If you're using Ninja JWT
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
 from django.conf import settings
 from datetime import datetime, timedelta
-from ninja_jwt.authentication import JWTAuth  # If you're using Ninja JWT
 import jwt
+
 from compsuggs.models import Complaint
 from accounts.models import Student  # Import the Student model
 
 router = Router()
 
+
 class ComplaintSchema(Schema):
+    department: str
+    subject: str
+    priority_level: str
+    complaint_content: str
+    student: int
+
+class fullComplaintSchema(Schema):
     department: str
     subject: str
     priority_level: str
@@ -20,6 +30,7 @@ class ComplaintSchema(Schema):
     complaint_answer: str
     status: str
     student: int
+
 
 @router.post("/submit_complaint")
 def submit_complaint(request, data: ComplaintSchema):
@@ -31,6 +42,7 @@ def submit_complaint(request, data: ComplaintSchema):
             priority_level=data.priority_level,
             complaint_content=data.complaint_content,
             student=student_instance, 
+
         )
         return {"message": "Complaint saved successfully", "complaint_id": complaint.id}
     except Student.DoesNotExist:
@@ -39,9 +51,7 @@ def submit_complaint(request, data: ComplaintSchema):
         print(f"Error creating complaint: {str(e)}")  # Debug log
         raise HttpError(400, f"Failed to save request: {str(e)}")
 
-import jwt
-from django.conf import settings
-from django.http import JsonResponse
+
 
 @router.get('/get_all_comps')
 def get_all_comps(request):
