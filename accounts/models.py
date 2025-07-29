@@ -14,6 +14,8 @@ class Student(models.Model):
     # profile_photo = models.ImageField(upload_to='profile_photos_student/', null=True, blank=True)
     department = models.CharField(max_length=30)
     level = models.CharField(max_length=20)
+    password_reset_token = models.CharField(max_length=128, null=True, blank=True)
+    reset_token_created_at = models.DateTimeField(null=True, blank=True)
 
 
 

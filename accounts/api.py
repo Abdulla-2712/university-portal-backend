@@ -10,7 +10,12 @@ from datetime import datetime, timedelta
 import jwt
 from accounts.models import Student, Registration_Request, Admin
 from .auth import JWTAuth
+from .tokens import generate_reset_token, create_password_reset_token, verify_token
 from compsuggs.api import router as compsuggs_router  # Import compsuggs router
+from django.core.mail import send_mail
+from django.conf import settings
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import check_password
 
 router = Router()
 api = NinjaExtraAPI()
@@ -25,6 +30,9 @@ SECRET_KEY = settings.SECRET_KEY
 class UserLoginSchema(Schema):
     email: str
     password: str
+class PasswordResetSchema(Schema):
+    password: str
+    token: str
 class AdminLoginSchema(Schema):
     email: str
     password:str
@@ -47,7 +55,7 @@ class AddStudentSchema(Schema):
 def Slogin(request, data: UserLoginSchema):
     try:
         student = Student.objects.get(email = data.email)
-        if student.password == data.password:
+        if check_password(data.password, student.password):
             payload = {
                 "id": student.id,
                 "email": student.email,
@@ -77,7 +85,19 @@ def Alogin(request, data: AdminLoginSchema):
     except Admin.DoesNotExist:
         raise HttpError(404, "User not found")
 
-
+@api.post("/new_password")
+def new_password(request, data: PasswordResetSchema):
+    user = verify_token(data.token)
+    if user is None:
+        raise HttpError(400, "Invalid or expired token")
+    try:
+        user.password = make_password(data.password)
+        user.password_reset_token = None
+        user.reset_token_created_at = None
+        user.save()
+        return {"message": "Password changed successfully"}
+    except Student.DoesNotExist:
+        raise HttpError(404, "User not found")
 
 @router.post("/submit_request")
 def submit_request(request, data: UserRequestSchema):
@@ -122,8 +142,9 @@ def add_user(request, data: UserRequestSchema):
         raise HttpError(409, "A student with this email already exists.")
     if Student.objects.filter(Seat_Number= data.Seat_Number).exists():
         raise HttpError(409, "A student with this Seat number already exists.")
+    
     try:
-        Student.objects.create(
+        user = Student.objects.create(
             name=data.name,
             email=data.email,
             phone_number=data.phone_number,
@@ -131,6 +152,14 @@ def add_user(request, data: UserRequestSchema):
             level=data.level,
             department=data.department
         )
+        token = create_password_reset_token(user)
+        reset_link = f"http://localhost:3000/new_password?token={token}"
+
+        subject = 'Welcome to Our Platform'
+        message = f'Your account has been accepted! Here is the password reset link:\n{reset_link}\n\nThank you for signing up.'
+        email_from = settings.EMAIL_HOST_USER
+        recipient_list = [data.email]
+        send_mail(subject, message, email_from, recipient_list)
         return {"message": "Request saved successfully"}
     except Exception as e:
         raise HttpError(400, f"Failed to save request: {str(e)}")
@@ -141,3 +170,4 @@ def delete_request(request, request_id: int):
     obj = get_object_or_404(Registration_Request, id=request_id)
     obj.delete()
     return {"message": "Request deleted successfully"}
+
