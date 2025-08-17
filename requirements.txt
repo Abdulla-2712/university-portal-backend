@@ -7,3 +7,4 @@ psycopg2-binary
 psycopg
 Pillow
 rav
+gunicorn==21.2.0
