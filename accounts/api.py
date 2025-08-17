@@ -153,7 +153,7 @@ def add_user(request, data: UserRequestSchema):
             department=data.department
         )
         token = create_password_reset_token(user)
-        reset_link = f"http://localhost:3000/new_password?token={token}"
+        reset_link = f"https://university-portal-frontend-1.vercel.app/new_password?token={token}"
 
         subject = 'Welcome to Our Platform'
         message = f'Your account has been accepted! Here is the password reset link:\n{reset_link}\n\nThank you for signing up.'
