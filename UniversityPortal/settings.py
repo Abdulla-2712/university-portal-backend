@@ -23,8 +23,11 @@ SECRET_KEY = 'django-insecure-lmd9o==nm6)&f7e@93!1wys_-%r99l=a-9z+a%qdvlnrec_t%s
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+    'university-portal-backend-production.up.railway.app',
+    'localhost',
+    '127.0.0.1',
+]
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
