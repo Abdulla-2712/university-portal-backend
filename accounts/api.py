@@ -72,7 +72,7 @@ def Slogin(request, data: UserLoginSchema):
 def Alogin(request, data: AdminLoginSchema):
     try:
         admin = Admin.objects.get(email = data.email)
-        if admin.password == data.password:
+        if check_password(data.password, admin.password):
             payload = {
                 "id": admin.id,
                 "email": admin.email,

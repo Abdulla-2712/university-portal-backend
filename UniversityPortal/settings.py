@@ -14,7 +14,6 @@ from pathlib import Path
 from datetime import timedelta
 import os
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -76,15 +75,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'UniversityPortal.wsgi.application'
 
-# Database
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'universityportaldb',
-        'USER': 'abdullaomar',
-        'PASSWORD': '123123',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': "railway",
+        'USER': "postgres",
+        'PASSWORD': "zIeAtihFAotWdxPuSzCRPIKIHcrtdzJX",
+        'HOST': "gondola.proxy.rlwy.net",
+        'PORT': "47864"
     }
 }
 
@@ -152,6 +151,6 @@ TEMPLATES = [
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'  # Replace with your SMTP host
 EMAIL_HOST_USER = "aabdula2712@gmail.com"  # Your email address
-EMAIL_HOST_PASSWORD = "amidlqyvpomrgzwn"  # Your email password
+EMAIL_HOST_PASSWORD = "njwletegsbhqgsou"  # Your email password
 EMAIL_PORT = 465  # SMTP port
 EMAIL_USE_SSL = True  # Use SSL for secure connection
